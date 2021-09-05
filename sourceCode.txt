@@ -1,0 +1,98 @@
+
+import requests
+from bs4 import BeautifulSoup
+
+webpage = requests.get("https://ko.wikipedia.org/wiki/%EA%B5%AC%EA%B8%80")
+soup = BeautifulSoup(webpage.content, "html.parser")
+#soup.find_all(attrs={'class':'mw-body-content mw-content-ltr'})
+#all_ps = soup.find_all("p")
+result = soup.find('div', class_='mw-body-content mw-content-ltr')
+
+parsing = ""
+for tag in result.find_all('p'):
+    parsing += tag.text
+    #print(tag.text)
+    
+print(parsing)
+
+f = open('test.txt', 'w')
+
+f.write(parsing)
+
+f.close()
+
+-----------------------------------------------
+
+#utf-8, cp949, euc-kr
+f = open('/content/test3.txt', 'r', encoding='cp949')
+txt = f.readlines()
+f.close()
+
+txt
+
+!apt-get install g++ openjdk-7-jdk
+!apt-get install python3-dev; pip3 install konlpy
+
+from konlpy.tag import Twitter
+twitter = Twitter()
+
+twitter.morphs('안녕하세요 저는 장환곤이고 대학생입니다. 숭실대학교 학생입니다.')
+
+morph_list = []
+for i in txt:
+  #morphs = twitter.morphs(i)
+  morphs = twitter.nouns(i)
+  
+  for morph in morphs:
+    morph_list.append(morph)
+
+len(morph_list)
+
+from collections import Counter
+count = Counter(morph_list)
+count.most_common()
+
+for i in morph_list:
+  f = open('morph2.txt', 'a', encoding='utf8')
+  f.write(i+'\n')
+  f.close()
+-----------------------------------------------
+import numpy as np
+
+import os
+import re
+from PIL import Image
+from os import path
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
+f = open('morph2.txt', 'r', encoding='utf8')
+txt = f.readlines()
+f.close()
+
+new_txt = []
+for i in txt:
+    new_txt.append(i.replace('\n', ''))
+
+new_txt
+
+str_txt = ''
+for i in new_txt:
+    str_txt = str_txt + i + ' '
+
+str_txt
+
+from collections import Counter
+Counter(new_txt).most_common()
+
+stop = ['.', '을', '', '이']
+stopwords = set(stop)
+
+wc = WordCloud(background_color='white', font_path = 'C:/Users/myggo/AppData/Local/Microsoft/Windows/Fonts/DXMSubtitlesM-KSCpc-EUC-H.ttf', max_words=1000, mask=mask, stopwords=stopwords, margin=10,
+               random_state=1, contour_color='black').generate(str_txt) #C, Windows, Fonts, 속성보안
+wc.to_file("a_new_hope.png")
+plt.axis("off")
+plt.figure(figsize = (10, 10))
+plt.imshow(wc, interpolation="bilinear")
+plt.axis("off")
+plt.show()
